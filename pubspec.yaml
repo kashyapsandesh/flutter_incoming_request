@@ -20,7 +20,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.example.flutter_incoming_request
+        package: com.kashyapsandesh.flutter_incoming_request
         pluginClass: FlutterIncomingRequestPlugin
       ios:
         pluginClass: FlutterIncomingRequestPlugin
