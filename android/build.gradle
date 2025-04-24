@@ -22,7 +22,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    namespace 'com.kashyapsandesh.flutter_incoming_request'
+    namespace 'com.kashyap.flutter_incoming_request'
     compileSdkVersion 33
 
     defaultConfig {
