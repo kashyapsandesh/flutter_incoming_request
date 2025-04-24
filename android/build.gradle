@@ -1,4 +1,4 @@
-group 'com.example.flutter_incoming_request'
+group 'com.kashyapsandesh.flutter_incoming_request'
 version '1.0'
 
 buildscript {
