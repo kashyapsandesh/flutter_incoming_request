@@ -41,7 +41,7 @@ class FlutterIncomingRequestPlugin : FlutterPlugin, MethodCallHandler {
     private fun showRequest(data: Map<String, Any>?) {
         if (data == null) return
         // Start foreground service & show notification
-        val intent = Intent(context, RequestService::class.java).apply {
+        val intent = Intent(context, IncomingRequestService::class.java).apply {
             // Pass data to the service
             data.forEach { (key, value) ->
                 when (value) {
@@ -68,7 +68,7 @@ class FlutterIncomingRequestPlugin : FlutterPlugin, MethodCallHandler {
 
     private fun hideRequest(id: String) {
         // Stop the service if it's running
-        val serviceIntent = Intent(context, RequestService::class.java)
+        val serviceIntent = Intent(context, IncomingRequestService::class.java)
         context.stopService(serviceIntent)
 
         // Cancel notification
