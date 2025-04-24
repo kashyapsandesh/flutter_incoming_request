@@ -9,32 +9,32 @@ public class SwiftFlutterIncomingRequestPlugin: NSObject, FlutterPlugin, CXProvi
     private var currentCallUUID: UUID?
     private var result: FlutterResult?
 
-    public static func register(with registrar: FlutterPluginRegistrar) {
-        let channel = FlutterMethodChannel(
-            name: "flutter_incoming_request",
-            binaryMessenger: registrar.messenger()
-        )
-        let instance = SwiftFlutterIncomingRequestPlugin()
-        registrar.addMethodCallDelegate(instance, channel: channel)
-    }
+  public static func register(with registrar: FlutterPluginRegistrar) {
+    let channel = FlutterMethodChannel(
+      name: "flutter_incoming_request",
+      binaryMessenger: registrar.messenger()
+    )
+    let instance = SwiftFlutterIncomingRequestPlugin()
+    registrar.addMethodCallDelegate(instance, channel: channel)
+  }
 
-    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         self.result = result
-        switch call.method {
-        case "show":
-            if let args = call.arguments as? [String: Any] {
-                showRequest(args)
-            }
-        case "hide":
-            if let args = call.arguments as? [String: Any], let id = args["id"] as? String {
-                hideRequest(id)
-            }
-        default:
-            result(FlutterMethodNotImplemented)
-        }
+    switch call.method {
+    case "show":
+      if let args = call.arguments as? [String: Any] {
+        showRequest(args)
+      }
+    case "hide":
+      if let args = call.arguments as? [String: Any], let id = args["id"] as? String {
+        hideRequest(id)
+      }
+    default:
+      result(FlutterMethodNotImplemented)
     }
+  }
 
-    private func showRequest(_ data: [String: Any]) {
+  private func showRequest(_ data: [String: Any]) {
         let configuration = CXProviderConfiguration()
         configuration.supportsVideo = false
         configuration.maximumCallGroups = 1
@@ -46,7 +46,7 @@ public class SwiftFlutterIncomingRequestPlugin: NSObject, FlutterPlugin, CXProvi
         
         callController = CXCallController()
         
-        let update = CXCallUpdate()
+    let update = CXCallUpdate()
         update.remoteHandle = CXHandle(type: .generic, value: data["name"] as? String ?? "Unknown")
         update.hasVideo = false
         
@@ -81,5 +81,5 @@ public class SwiftFlutterIncomingRequestPlugin: NSObject, FlutterPlugin, CXProvi
     public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
         action.fulfill()
         currentCallUUID = nil
-    }
+  }
 }
