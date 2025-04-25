@@ -2,7 +2,8 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_incoming_request/flutter_incoming_request.dart';
+import 'package:flutter_incoming_request/src/models/request_data.dart';
+import 'package:flutter_incoming_request/src/ui/layout_builder.dart';
 
 class PlatformCheck {
   static bool get isAndroid => Platform.isAndroid;

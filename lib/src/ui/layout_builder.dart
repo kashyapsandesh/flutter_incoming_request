@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_incoming_request/flutter_incoming_request.dart';
+import 'package:flutter_incoming_request/src/models/request_data.dart';
 
 abstract class CustomLayoutBuilder {
   Widget buildLayout(RequestData data, Function(NotificationAction) onAction);

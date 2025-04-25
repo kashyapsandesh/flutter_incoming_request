@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -13,15 +14,28 @@ import io.flutter.plugin.common.MethodChannel.Result
 class FlutterIncomingRequestPlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var channel: MethodChannel
     private lateinit var context: Context
+    private lateinit var notificationHelper: NotificationHelper
+    private var notificationId = 0
 
-    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(binding.binaryMessenger, "flutter_incoming_request")
+    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        context = flutterPluginBinding.applicationContext
+        notificationHelper = NotificationHelper(context)
+        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_incoming_request")
         channel.setMethodCallHandler(this)
-        context = binding.applicationContext
     }
 
-    override fun onMethodCall(call: MethodCall, result: Result) {
+    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
+            "showNotification" -> {
+                val title = call.argument<String>("title") ?: "Incoming Request"
+                val content = call.argument<String>("content") ?: "You have a new request"
+                
+                val notification = notificationHelper.buildNotification(title, content)
+                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.notify(notificationId++, notification.build())
+                
+                result.success(null)
+            }
             "show" -> {
                 showRequest(call.arguments as? Map<String, Any>)
                 result.success(null) // Acknowledge the call
@@ -76,7 +90,7 @@ class FlutterIncomingRequestPlugin : FlutterPlugin, MethodCallHandler {
         notificationManager.cancel(1) // Use the same ID used in startForeground
     }
 
-     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
     }
 } 

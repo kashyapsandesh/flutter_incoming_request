@@ -18,58 +18,25 @@ class IncomingRequestService : Service() {
     private lateinit var notificationManager: NotificationManager
     private var flutterEngine: FlutterEngine? = null
     private var methodChannel: MethodChannel? = null
-    private var plugin: FlutterIncomingRequestPlugin? = null
 
     override fun onCreate() {
         super.onCreate()
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         createNotificationChannel()
-
-        try {
-            // Initialize Flutter engine
-            flutterEngine = FlutterEngine(this)
-            flutterEngine?.dartExecutor?.executeDartEntrypoint(
-                DartExecutor.DartEntrypoint.createDefault()
-            )
-
-            // Initialize plugin
-            plugin = FlutterIncomingRequestPlugin()
-            plugin?.onAttachedToEngine(flutterEngine?.plugins)
-
-            // Initialize method channel
-            methodChannel = MethodChannel(flutterEngine?.dartExecutor?.binaryMessenger, "flutter_incoming_request")
-        } catch (e: Exception) {
-            // Handle initialization errors gracefully
-            e.printStackTrace()
-        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent == null) return START_NOT_STICKY
 
-        try {
-            val name = intent.getStringExtra("name") ?: ""
-            val number = intent.getStringExtra("number")
-            val routeName = intent.getStringExtra("routeName")
-            val routeArgs = intent.getSerializableExtra("routeArgs") as? HashMap<String, Any>
-            val shouldStartApp = intent.getBooleanExtra("shouldStartApp", true)
+        val name = intent.getStringExtra("name") ?: ""
+        val number = intent.getStringExtra("number")
+        val routeName = intent.getStringExtra("routeName")
+        val routeArgs = intent.getSerializableExtra("routeArgs") as? HashMap<String, Any>
+        val shouldStartApp = intent.getBooleanExtra("shouldStartApp", true)
 
-            // Create notification
-            val notification = createNotification(name, number, routeName, routeArgs, shouldStartApp)
-            startForeground(1, notification)
-
-            // Send event to Flutter if plugin is initialized
-            plugin?.sendEvent("request", mapOf(
-                "name" to name,
-                "number" to (number ?: ""),
-                "routeName" to (routeName ?: ""),
-                "routeArgs" to (routeArgs ?: emptyMap<String, Any>()),
-                "shouldStartApp" to shouldStartApp
-            ))
-        } catch (e: Exception) {
-            // Handle errors gracefully
-            e.printStackTrace()
-        }
+        // Create notification
+        val notification = createNotification(name, number, routeName, routeArgs, shouldStartApp)
+        startForeground(1, notification)
 
         return START_NOT_STICKY
     }
@@ -87,10 +54,8 @@ class IncomingRequestService : Service() {
         // Create intent to launch app
         val launchIntent = packageManager.getLaunchIntentForPackage(packageName)?.apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            if (routeName != null) {
-                putExtra("routeName", routeName)
-                routeArgs?.let { putExtra("routeArgs", it) }
-            }
+            putExtra("routeName", routeName)
+            routeArgs?.let { putExtra("routeArgs", it) }
         }
 
         val pendingIntent = PendingIntent.getActivity(
@@ -127,12 +92,7 @@ class IncomingRequestService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        try {
-            plugin?.onDetachedFromEngine(flutterEngine?.plugins)
-            flutterEngine?.destroy()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        flutterEngine?.destroy()
     }
 
     companion object {
