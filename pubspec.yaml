@@ -10,9 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_local_notifications: ^16.3.0
-  permission_handler: ^11.1.0
-  uuid: ^4.3.3
+  flutter_local_notifications: any
+  permission_handler: any # 11.1.0
+  uuid: any
 
 dev_dependencies:
   flutter_test:
